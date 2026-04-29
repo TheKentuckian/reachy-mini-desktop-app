@@ -197,9 +197,11 @@ export function WebRTCStreamProvider({ children }: WebRTCStreamProviderProps): R
     setState(StreamState.CONNECTING);
     setError(null);
 
-    // Use `remoteHost` for WiFi, localhost for USB/Lite (daemon runs locally).
-    const host = remoteHost || 'localhost';
-    const signalingUrl = `ws://${host}:${SIGNALING_PORT}`;
+    // Always connect through the local proxy (localhost:8443 → robot:8443).
+    // Connecting directly to the robot IP is blocked by WebKit2GTK's Private
+    // Network Access policy; the proxy bypasses that restriction, consistent
+    // with how all other robot traffic is routed.
+    const signalingUrl = `ws://localhost:${SIGNALING_PORT}`;
 
     try {
       const GstWebRTCAPI = window.GstWebRTCAPI;
@@ -212,10 +214,11 @@ export function WebRTCStreamProvider({ children }: WebRTCStreamProviderProps): R
         reconnectionTimeout: 0,
         meta: { name: 'reachy-desktop-app' },
         webrtcConfig: {
-          iceServers: [
-            { urls: 'stun:stun.l.google.com:19302' },
-            { urls: 'stun:stun1.l.google.com:19302' },
-          ],
+          // No external STUN — on a direct LAN connection STUN reflexive
+          // candidates reflect the public internet IP (useless for local
+          // routing) and the UDP queries may be blocked in Crostini.
+          // Host candidates via the proxy are sufficient for LAN WebRTC.
+          iceServers: [],
         },
       });
 
@@ -359,7 +362,7 @@ export function WebRTCStreamProvider({ children }: WebRTCStreamProviderProps): R
       setError(message);
       setState(StreamState.ERROR);
     }
-  }, [remoteHost, cleanup]);
+  }, [cleanup]);
 
   /** Disconnect from the stream. */
   const disconnect = useCallback((): void => {
