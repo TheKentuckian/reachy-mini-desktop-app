@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Box } from '@mui/material';
 import * as THREE from 'three';
+import { isLinux } from '../../utils/platform';
 import Scene from './Scene';
 import WebGLCleanup from './WebGLCleanup';
 import SettingsOverlay from './SettingsOverlay';
@@ -203,7 +204,7 @@ export default function RobotViewer3D({
     >
       <Canvas
         camera={{ position: cameraConfig.position, fov: cameraConfig.fov }}
-        dpr={[1, 2]}
+        dpr={isLinux() ? [1, 1] : [1, 2]}
         frameloop={hideEffects ? 'demand' : 'always'}
         gl={
           {

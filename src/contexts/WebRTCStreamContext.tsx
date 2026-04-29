@@ -17,7 +17,6 @@ import React, {
 import useAppStore from '../store/useAppStore';
 import { fetchWithTimeout, buildApiUrl } from '../config/daemon';
 import { ROBOT_STATUS } from '../constants/robotStatus';
-import { isLinux } from '../utils/platform';
 
 // Import the GStreamer WebRTC API for its side effect (registers `window.GstWebRTCAPI`).
 import '../lib/gstwebrtc-api';
@@ -98,12 +97,10 @@ export function WebRTCStreamProvider({ children }: WebRTCStreamProviderProps): R
   const hasConnectedRef = useRef<boolean>(false);
 
   useEffect(() => {
-    if (isLinux()) {
-      // WebKit on Linux is not built with WebRTC support, so streaming is unavailable.
-      setIsWebRTCAvailable(false);
-      return;
-    }
-
+    // Note: WebKit2GTK 4.1+ (required by Tauri 2) includes WebRTC support on most
+    // modern distros (including Crostini/Debian Bookworm). We allow the connection
+    // attempt here; if the signaling server can't be reached the stream will simply
+    // remain disconnected and the camera panel shows the unavailable state.
     if (
       connectionMode === 'usb' ||
       connectionMode === 'external' ||
