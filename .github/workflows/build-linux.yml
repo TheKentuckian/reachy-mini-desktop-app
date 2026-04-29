@@ -128,14 +128,14 @@ jobs:
           echo "BUILD_DATE=${BUILD_DATE}" >> $GITHUB_ENV
           echo "GIT_SHA=${GIT_SHA}"       >> $GITHUB_ENV
           mkdir -p dist
-          for f in $(find src-tauri/target/x86_64-unknown-linux-gnu/release/bundle/deb -name "*.deb"); do
+          while IFS= read -r -d '' f; do
             base=$(basename "$f" .deb)
             cp "$f" "dist/${base}_${BUILD_DATE}_${GIT_SHA}.deb"
-          done
-          for f in $(find src-tauri/target/x86_64-unknown-linux-gnu/release/bundle/appimage -name "*.AppImage"); do
+          done < <(find src-tauri/target/x86_64-unknown-linux-gnu/release/bundle/deb -name "*.deb" -print0)
+          while IFS= read -r -d '' f; do
             base=$(basename "$f" .AppImage)
             cp "$f" "dist/${base}_${BUILD_DATE}_${GIT_SHA}.AppImage"
-          done
+          done < <(find src-tauri/target/x86_64-unknown-linux-gnu/release/bundle/appimage -name "*.AppImage" -print0)
           echo "📦 Built packages:"
           ls -lh dist/
 
