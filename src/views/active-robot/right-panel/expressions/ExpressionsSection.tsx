@@ -25,6 +25,10 @@ const BUSY_DEBOUNCE_MS = 150;
  *  the "command running" and "moving" busy reasons. */
 const ACTIVE_ACTION_RESET_DEBOUNCE_MS = 100;
 
+/** Maximum time an emotion spinner stays visible. Guards against the daemon
+ *  failing to report completion (e.g. stale WebSocket on Crostini/Linux). */
+const ACTIVE_ACTION_MAX_DISPLAY_MS = 45_000;
+
 type View = 'wheel' | 'library';
 type TimeoutId = ReturnType<typeof setTimeout>;
 
@@ -55,6 +59,7 @@ export default function ExpressionsSection({
 
   const [activeActionName, setActiveActionName] = useState<string | null>(null);
   const activeActionResetTimeoutRef = useRef<TimeoutId | null>(null);
+  const activeActionMaxTimeoutRef = useRef<TimeoutId | null>(null);
 
   const rawIsBusy = robotStatus === 'busy' || isCommandRunning || isAppRunning || isInstalling;
   const [debouncedIsBusy, setDebouncedIsBusy] = useState<boolean>(rawIsBusy);
@@ -115,6 +120,14 @@ export default function ExpressionsSection({
 
       setActiveActionName(action.name);
 
+      // Safety net: force-clear the spinner after ACTIVE_ACTION_MAX_DISPLAY_MS
+      // in case the daemon never reports completion (stale WebSocket, etc.).
+      if (activeActionMaxTimeoutRef.current) clearTimeout(activeActionMaxTimeoutRef.current);
+      activeActionMaxTimeoutRef.current = setTimeout(() => {
+        activeActionMaxTimeoutRef.current = null;
+        setActiveActionName(null);
+      }, ACTIVE_ACTION_MAX_DISPLAY_MS);
+
       const prefix = action.type === 'dance' ? 'Playing dance' : 'Playing emotion';
       logger.userAction(`${prefix}: ${action.label}`);
       telemetry.expressionPlayed({ name: action.name, type: action.type });
@@ -136,12 +149,16 @@ export default function ExpressionsSection({
     [debouncedIsBusy, playRecordedMove, triggerEffect, stopEffect, logger]
   );
 
-  // Flush the effect timeout on unmount.
+  // Flush the effect and max-display timeouts on unmount.
   useEffect(() => {
     return () => {
       if (effectTimeoutRef.current) {
         clearTimeout(effectTimeoutRef.current);
         effectTimeoutRef.current = null;
+      }
+      if (activeActionMaxTimeoutRef.current) {
+        clearTimeout(activeActionMaxTimeoutRef.current);
+        activeActionMaxTimeoutRef.current = null;
       }
     };
   }, []);
