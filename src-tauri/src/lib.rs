@@ -228,7 +228,9 @@ async fn clear_local_proxy_target(state: State<'_, Arc<LocalProxyState>>) -> Res
 /// Used by the frontend reconciliation to restore `remoteHost` after a webview
 /// reload when the Rust process (and its proxy target) survived.
 #[tauri::command]
-async fn get_local_proxy_target(state: State<'_, Arc<LocalProxyState>>) -> Result<Option<String>, String> {
+async fn get_local_proxy_target(
+    state: State<'_, Arc<LocalProxyState>>,
+) -> Result<Option<String>, String> {
     Ok(local_proxy::get_target_host_public(&state).await)
 }
 
@@ -394,7 +396,20 @@ pub fn run() {
         }
         #[cfg(not(all(target_os = "macos", not(debug_assertions))))]
         {
-            true
+            // On Linux, BlueZ (org.bluez) is often absent — especially in
+            // Crostini/VM environments. Skip BLE init to prevent a panic that
+            // bleeds through catch_unwind via btleplug's async worker threads.
+            // BLE setup is only used for initial WiFi provisioning; USB-connected
+            // robots work without it.
+            #[cfg(target_os = "linux")]
+            {
+                log::info!("[blec] Skipping BLE plugin init on Linux — BlueZ may not be available");
+                false
+            }
+            #[cfg(not(target_os = "linux"))]
+            {
+                true
+            }
         }
     };
 

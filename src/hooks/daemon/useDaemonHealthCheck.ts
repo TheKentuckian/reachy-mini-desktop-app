@@ -62,8 +62,13 @@ interface DaemonStatusPayload {
  * - All platforms: Pause during wake/sleep transitions
  */
 export function useDaemonHealthCheck(isActive: boolean): void {
-  const { isDaemonCrashed, isWakeSleepTransitioning, incrementTimeouts, resetTimeouts } =
-    useAppStore();
+  const {
+    isDaemonCrashed,
+    isWakeSleepTransitioning,
+    isCommandRunning,
+    incrementTimeouts,
+    resetTimeouts,
+  } = useAppStore();
 
   const eventBus = useDaemonEventBus();
 
@@ -87,9 +92,10 @@ export function useDaemonHealthCheck(isActive: boolean): void {
       return;
     }
 
-    // ⏸️ Pause health check during wake/sleep transitions
-    // The daemon may be busy with animation and respond slowly
-    if (isWakeSleepTransitioning) {
+    // ⏸️ Pause health check during wake/sleep transitions or active commands.
+    // The daemon may be busy with animation/gesture and respond slowly, which
+    // would otherwise cause spurious timeout accumulation and a false crash.
+    if (isWakeSleepTransitioning || isCommandRunning) {
       return;
     }
 
@@ -200,5 +206,5 @@ export function useDaemonHealthCheck(isActive: boolean): void {
     };
     // Zustand setters are stable - intentionally omitted from deps.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isActive, isDaemonCrashed, isWakeSleepTransitioning, isWindowVisible]);
+  }, [isActive, isDaemonCrashed, isWakeSleepTransitioning, isCommandRunning, isWindowVisible]);
 }

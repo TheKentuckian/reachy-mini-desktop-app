@@ -192,10 +192,10 @@ Returned shape:
 
 Two built-in presets are resolved via `resolveCameraConfig(cameraPreset)`.
 
-| Preset   | Position              | FOV | Target        | Min / Max distance |
-| -------- | --------------------- | --- | ------------- | ------------------ |
-| `normal` | `[-0.25, 0.35, 0.55]` | 50  | `[0, 0.2, 0]` | 0.2 / 0.6          |
-| `scan`   | `[0, 0.22, 0.5]`      | 55  | `[0, 0.12, 0]`| 0.15 / 0.5         |
+| Preset   | Position              | FOV | Target         | Min / Max distance |
+| -------- | --------------------- | --- | -------------- | ------------------ |
+| `normal` | `[-0.25, 0.35, 0.55]` | 50  | `[0, 0.2, 0]`  | 0.2 / 0.6          |
+| `scan`   | `[0, 0.22, 0.5]`      | 55  | `[0, 0.12, 0]` | 0.15 / 0.5         |
 
 `cameraPreset` also accepts a `Partial<CameraPresetConfig>` that is merged on
 top of the `normal` preset, so callers can override individual fields.
@@ -282,7 +282,7 @@ Scan / hardware-check view (xray + cinematic camera, zero pose is fine):
   onMeshesReady={handleMeshesReady}
   onScanComplete={handleScanComplete}
   errorFocusMesh={errorFocusMesh}
-/>;
+/>
 ```
 
 Force the spinner on an otherwise static viewer:

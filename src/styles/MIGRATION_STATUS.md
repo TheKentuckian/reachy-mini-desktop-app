@@ -21,31 +21,43 @@ Import surface (`@styles` + `@styles/tokens`):
 
 ```ts
 import {
-  ACCENT, STATUS, STATUS_TEXT, DANGER,
-  RADIUS, TYPO, FONT_WEIGHT, BLUR,
-  DURATION, EASING, Z,
-  LETTER_SPACING, BREAKPOINT,
-  accentAlpha, blackAlpha, whiteAlpha, hexToRgba,
+  ACCENT,
+  STATUS,
+  STATUS_TEXT,
+  DANGER,
+  RADIUS,
+  TYPO,
+  FONT_WEIGHT,
+  BLUR,
+  DURATION,
+  EASING,
+  Z,
+  LETTER_SPACING,
+  BREAKPOINT,
+  accentAlpha,
+  blackAlpha,
+  whiteAlpha,
+  hexToRgba,
   transition,
 } from '@styles/tokens';
 import { useAppPalette, scrollbarSx } from '@styles';
 ```
 
-| Concern | Token(s) |
-|---|---|
-| Accent brand | `ACCENT.{main,light,dark}`, `accentAlpha(a)` |
-| Semantic status | `STATUS.{success,error,warning,info,neutral}` |
-| Status tiles | `palette.status*Surface/Border/Text` |
-| Destructive actions | `palette.danger{Text,Border,SurfaceHover}` |
+| Concern                 | Token(s)                                               |
+| ----------------------- | ------------------------------------------------------ |
+| Accent brand            | `ACCENT.{main,light,dark}`, `accentAlpha(a)`           |
+| Semantic status         | `STATUS.{success,error,warning,info,neutral}`          |
+| Status tiles            | `palette.status*Surface/Border/Text`                   |
+| Destructive actions     | `palette.danger{Text,Border,SurfaceHover}`             |
 | Text / surface / border | `palette.text*`, `palette.surface*`, `palette.border*` |
-| Shadows | `palette.shadow{Md,Lg}`, `palette.accentGlow` |
-| Radii | `RADIUS.{xs,sm,md,lg,xl,xxl,pill,circle}` |
-| Font size | `TYPO.{micro,tiny,xs,sm,body,md,lg,xl,xxl,hero}` |
-| Font weight | `FONT_WEIGHT.{regular,medium,semibold,bold}` |
-| Backdrop blur | `BLUR.{sm,md,lg}` (8px / 10px / 40px) |
-| Durations / easings | `DURATION.*`, `EASING.*` |
-| Transitions | `transition(prop, ms, easing)` helper |
-| Scrollbars | `...scrollbarSx(palette, options?)` spread |
+| Shadows                 | `palette.shadow{Md,Lg}`, `palette.accentGlow`          |
+| Radii                   | `RADIUS.{xs,sm,md,lg,xl,xxl,pill,circle}`              |
+| Font size               | `TYPO.{micro,tiny,xs,sm,body,md,lg,xl,xxl,hero}`       |
+| Font weight             | `FONT_WEIGHT.{regular,medium,semibold,bold}`           |
+| Backdrop blur           | `BLUR.{sm,md,lg}` (8px / 10px / 40px)                  |
+| Durations / easings     | `DURATION.*`, `EASING.*`                               |
+| Transitions             | `transition(prop, ms, easing)` helper                  |
+| Scrollbars              | `...scrollbarSx(palette, options?)` spread             |
 
 See [`MIGRATION_GUIDE.md`](./MIGRATION_GUIDE.md) for the full before/after
 mapping table.

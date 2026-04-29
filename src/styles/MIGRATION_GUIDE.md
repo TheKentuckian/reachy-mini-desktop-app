@@ -39,42 +39,42 @@ literal (e.g. a radial gradient stop).
 
 ## 2. Mapping table
 
-| Before | After |
-|---|---|
-| `'#FF9500'`, `'#FF9500'` (accent) | `ACCENT.main` |
-| `'#FFB74D'` (accent light) | `ACCENT.light` |
-| `'#E68A00'` (accent dark) | `ACCENT.dark` |
-| `` `rgba(255, 149, 0, ${a})` `` | `accentAlpha(a)` |
-| `` `rgba(255, 255, 255, ${a})` `` | `whiteAlpha(a)` |
-| `` `rgba(0, 0, 0, ${a})` `` | `blackAlpha(a)` |
-| `darkMode ? '#f5f5f5' : '#333'` | `palette.textPrimary` |
-| `darkMode ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.6)'` | `palette.textSecondary` |
-| `darkMode ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.4)'` | `palette.textMuted` |
-| `darkMode ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.3)'` | `palette.textFaint` |
-| `darkMode ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.2)'` | `palette.textDisabled` |
-| `darkMode ? '#0f0f0f' : '#ffffff'` | `palette.surfaceBg` |
-| `darkMode ? 'rgba(25,25,25,0.95)' : 'rgba(255,255,255,0.95)'` | `palette.surfaceCard` |
-| `darkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.1)'` | `palette.border` |
-| `darkMode ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.15)'` | `palette.borderStrong` |
-| `darkMode ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.12)'` | `palette.divider` |
-| `darkMode ? '0 4px 20px rgba(0,0,0,0.4)' : '0 4px 20px rgba(0,0,0,0.08)'` | `palette.shadowMd` |
-| `darkMode ? '0 8px 32px rgba(0,0,0,0.4)' : '0 8px 32px rgba(0,0,0,0.05)'` | `palette.shadowLg` |
-| accent tinted surfaces idle | `palette.accentSurface` |
-| accent tinted surfaces hover | `palette.accentSurfaceHover` |
-| accent tinted surfaces active/pressed | `palette.accentSurfaceActive` |
-| soft accent border | `palette.accentBorder` |
-| stronger hovered accent border | `palette.accentBorderStrong` |
-| `0 6px 24px rgba(255,149,0,0.35)` (accent glow) | `palette.accentGlow` |
-| green / success | `palette.statusSuccess` or `STATUS.success` |
-| red / error | `palette.statusError` |
-| amber / warning | `palette.statusWarning` |
-| blue / info | `palette.statusInfo` |
-| grey "stopped" / "not_initialized" | `palette.statusNeutral` |
-| purple "busy" / "moving" / "executing" / "app-running" | `palette.statusBusy` |
-| `darkMode ? ACCENT.light : ACCENT.dark` (readable accent text) | `palette.accentTextStrong` |
-| `transition: 'all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)'` | `` `all ${DURATION.base}ms ${EASING.spring}` `` |
-| `transition: 'all 0.15s ease'` | `` `all ${DURATION.fast}ms ${EASING.standard}` `` or `transition('all')` |
-| `borderRadius: 12` | `borderRadius: RADIUS.lg` (check value) |
+| Before                                                                    | After                                                                    |
+| ------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| `'#FF9500'`, `'#FF9500'` (accent)                                         | `ACCENT.main`                                                            |
+| `'#FFB74D'` (accent light)                                                | `ACCENT.light`                                                           |
+| `'#E68A00'` (accent dark)                                                 | `ACCENT.dark`                                                            |
+| `` `rgba(255, 149, 0, ${a})` ``                                           | `accentAlpha(a)`                                                         |
+| `` `rgba(255, 255, 255, ${a})` ``                                         | `whiteAlpha(a)`                                                          |
+| `` `rgba(0, 0, 0, ${a})` ``                                               | `blackAlpha(a)`                                                          |
+| `darkMode ? '#f5f5f5' : '#333'`                                           | `palette.textPrimary`                                                    |
+| `darkMode ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.6)'`                  | `palette.textSecondary`                                                  |
+| `darkMode ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.4)'`                  | `palette.textMuted`                                                      |
+| `darkMode ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.3)'`                 | `palette.textFaint`                                                      |
+| `darkMode ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.2)'`                  | `palette.textDisabled`                                                   |
+| `darkMode ? '#0f0f0f' : '#ffffff'`                                        | `palette.surfaceBg`                                                      |
+| `darkMode ? 'rgba(25,25,25,0.95)' : 'rgba(255,255,255,0.95)'`             | `palette.surfaceCard`                                                    |
+| `darkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.1)'`                 | `palette.border`                                                         |
+| `darkMode ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.15)'`                | `palette.borderStrong`                                                   |
+| `darkMode ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.12)'`                | `palette.divider`                                                        |
+| `darkMode ? '0 4px 20px rgba(0,0,0,0.4)' : '0 4px 20px rgba(0,0,0,0.08)'` | `palette.shadowMd`                                                       |
+| `darkMode ? '0 8px 32px rgba(0,0,0,0.4)' : '0 8px 32px rgba(0,0,0,0.05)'` | `palette.shadowLg`                                                       |
+| accent tinted surfaces idle                                               | `palette.accentSurface`                                                  |
+| accent tinted surfaces hover                                              | `palette.accentSurfaceHover`                                             |
+| accent tinted surfaces active/pressed                                     | `palette.accentSurfaceActive`                                            |
+| soft accent border                                                        | `palette.accentBorder`                                                   |
+| stronger hovered accent border                                            | `palette.accentBorderStrong`                                             |
+| `0 6px 24px rgba(255,149,0,0.35)` (accent glow)                           | `palette.accentGlow`                                                     |
+| green / success                                                           | `palette.statusSuccess` or `STATUS.success`                              |
+| red / error                                                               | `palette.statusError`                                                    |
+| amber / warning                                                           | `palette.statusWarning`                                                  |
+| blue / info                                                               | `palette.statusInfo`                                                     |
+| grey "stopped" / "not_initialized"                                        | `palette.statusNeutral`                                                  |
+| purple "busy" / "moving" / "executing" / "app-running"                    | `palette.statusBusy`                                                     |
+| `darkMode ? ACCENT.light : ACCENT.dark` (readable accent text)            | `palette.accentTextStrong`                                               |
+| `transition: 'all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)'`                | `` `all ${DURATION.base}ms ${EASING.spring}` ``                          |
+| `transition: 'all 0.15s ease'`                                            | `` `all ${DURATION.fast}ms ${EASING.standard}` `` or `transition('all')` |
+| `borderRadius: 12`                                                        | `borderRadius: RADIUS.lg` (check value)                                  |
 
 ### 2.b Status surfaces (toasts, alerts, badges)
 
@@ -82,22 +82,22 @@ For tinted success / error / warning / info / neutral tiles (background + border
 readable text), use the `status*Surface|Border|Text` trio instead of open-coding
 rgba variants:
 
-| Before (typical toast / alert) | After |
-|---|---|
-| `darkMode ? 'rgba(34, 197, 94, 0.15)' : 'rgba(34, 197, 94, 0.1)'` | `palette.statusSuccessSurface` |
-| `darkMode ? 'rgba(34, 197, 94, 0.4)' : 'rgba(34, 197, 94, 0.3)'` | `palette.statusSuccessBorder` |
-| `darkMode ? '#86efac' : '#16a34a'` | `palette.statusSuccessText` |
-| `darkMode ? 'rgba(239, 68, 68, 0.15)' : 'rgba(239, 68, 68, 0.1)'` | `palette.statusErrorSurface` |
-| `darkMode ? 'rgba(239, 68, 68, 0.4)' : 'rgba(239, 68, 68, 0.3)'` | `palette.statusErrorBorder` |
-| `darkMode ? '#fca5a5' : '#dc2626'` | `palette.statusErrorText` |
-| `darkMode ? 'rgba(251, 191, 36, 0.15)' : 'rgba(251, 191, 36, 0.1)'` | `palette.statusWarningSurface` |
-| `darkMode ? 'rgba(251, 191, 36, 0.4)' : 'rgba(251, 191, 36, 0.3)'` | `palette.statusWarningBorder` |
-| `darkMode ? '#fde047' : '#ca8a04'` | `palette.statusWarningText` |
-| `darkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(59, 130, 246, 0.1)'` | `palette.statusInfoSurface` |
-| `darkMode ? 'rgba(59, 130, 246, 0.4)' : 'rgba(59, 130, 246, 0.3)'` | `palette.statusInfoBorder` |
-| `darkMode ? '#93c5fd' : '#2563eb'` | `palette.statusInfoText` |
+| Before (typical toast / alert)                                        | After                          |
+| --------------------------------------------------------------------- | ------------------------------ |
+| `darkMode ? 'rgba(34, 197, 94, 0.15)' : 'rgba(34, 197, 94, 0.1)'`     | `palette.statusSuccessSurface` |
+| `darkMode ? 'rgba(34, 197, 94, 0.4)' : 'rgba(34, 197, 94, 0.3)'`      | `palette.statusSuccessBorder`  |
+| `darkMode ? '#86efac' : '#16a34a'`                                    | `palette.statusSuccessText`    |
+| `darkMode ? 'rgba(239, 68, 68, 0.15)' : 'rgba(239, 68, 68, 0.1)'`     | `palette.statusErrorSurface`   |
+| `darkMode ? 'rgba(239, 68, 68, 0.4)' : 'rgba(239, 68, 68, 0.3)'`      | `palette.statusErrorBorder`    |
+| `darkMode ? '#fca5a5' : '#dc2626'`                                    | `palette.statusErrorText`      |
+| `darkMode ? 'rgba(251, 191, 36, 0.15)' : 'rgba(251, 191, 36, 0.1)'`   | `palette.statusWarningSurface` |
+| `darkMode ? 'rgba(251, 191, 36, 0.4)' : 'rgba(251, 191, 36, 0.3)'`    | `palette.statusWarningBorder`  |
+| `darkMode ? '#fde047' : '#ca8a04'`                                    | `palette.statusWarningText`    |
+| `darkMode ? 'rgba(59, 130, 246, 0.15)' : 'rgba(59, 130, 246, 0.1)'`   | `palette.statusInfoSurface`    |
+| `darkMode ? 'rgba(59, 130, 246, 0.4)' : 'rgba(59, 130, 246, 0.3)'`    | `palette.statusInfoBorder`     |
+| `darkMode ? '#93c5fd' : '#2563eb'`                                    | `palette.statusInfoText`       |
 | `darkMode ? 'rgba(156, 163, 175, 0.15)' : 'rgba(156, 163, 175, 0.1)'` | `palette.statusNeutralSurface` |
-| `darkMode ? '#d1d5db' : '#6b7280'` | `palette.statusNeutralText` |
+| `darkMode ? '#d1d5db' : '#6b7280'`                                    | `palette.statusNeutralText`    |
 
 For any other custom alpha on a status color, use the generic helper:
 
@@ -112,10 +112,10 @@ Danger surfaces are **intentionally distinct** from `statusError`: lighter,
 warmer, and meant for buttons that ask the user to confirm a destructive
 action. Use this trio instead of the red variants you'd use for errors:
 
-| Before | After |
-|---|---|
-| `darkMode ? '#f87171' : '#dc2626'` | `palette.dangerText` |
-| `darkMode ? 'rgba(248, 113, 113, 0.5)' : 'rgba(220, 38, 38, 0.5)'` | `palette.dangerBorder` |
+| Before                                                              | After                        |
+| ------------------------------------------------------------------- | ---------------------------- |
+| `darkMode ? '#f87171' : '#dc2626'`                                  | `palette.dangerText`         |
+| `darkMode ? 'rgba(248, 113, 113, 0.5)' : 'rgba(220, 38, 38, 0.5)'`  | `palette.dangerBorder`       |
 | `darkMode ? 'rgba(248, 113, 113, 0.1)' : 'rgba(220, 38, 38, 0.08)'` | `palette.dangerSurfaceHover` |
 
 ### 2.d Radii, typography, blur, scrollbars (non-color primitives)
@@ -123,15 +123,15 @@ action. Use this trio instead of the red variants you'd use for errors:
 Prefer the semantic tokens over raw literals so the app stays visually
 consistent:
 
-| Before | After |
-|---|---|
-| `borderRadius: '4px'` | `borderRadius: RADIUS.xs` |
-| `borderRadius: '6px'` | `borderRadius: RADIUS.sm` |
-| `borderRadius: '8px'` | `borderRadius: RADIUS.md` |
-| `borderRadius: '10px'` | `borderRadius: RADIUS.lg` |
-| `borderRadius: '12px'` | `borderRadius: RADIUS.xl` |
-| `borderRadius: '16px'` | `borderRadius: RADIUS.xxl` |
-| `borderRadius: '999px'` (pill) | `borderRadius: RADIUS.pill` |
+| Before                         | After                         |
+| ------------------------------ | ----------------------------- |
+| `borderRadius: '4px'`          | `borderRadius: RADIUS.xs`     |
+| `borderRadius: '6px'`          | `borderRadius: RADIUS.sm`     |
+| `borderRadius: '8px'`          | `borderRadius: RADIUS.md`     |
+| `borderRadius: '10px'`         | `borderRadius: RADIUS.lg`     |
+| `borderRadius: '12px'`         | `borderRadius: RADIUS.xl`     |
+| `borderRadius: '16px'`         | `borderRadius: RADIUS.xxl`    |
+| `borderRadius: '999px'` (pill) | `borderRadius: RADIUS.pill`   |
 | `borderRadius: '50%'` (circle) | `borderRadius: RADIUS.circle` |
 
 > ⚠️ **MUI gotcha**: `RADIUS.*` values are **px strings** on purpose. In MUI's
@@ -139,26 +139,26 @@ consistent:
 > (default 4), which made tokens render 4× too large. Raw numbers
 > (`borderRadius: 2` → 8px) are still valid if you intentionally want the
 > multiplier.
-| `fontSize: 10` | `fontSize: TYPO.tiny` |
-| `fontSize: 11` | `fontSize: TYPO.xs` |
-| `fontSize: 12` | `fontSize: TYPO.sm` |
-| `fontSize: 13` | `fontSize: TYPO.body` |
-| `fontSize: 14` | `fontSize: TYPO.md` |
-| `fontSize: 16` | `fontSize: TYPO.lg` |
-| `fontSize: 18` | `fontSize: TYPO.xl` |
-| `fontSize: 20` | `fontSize: TYPO.xxl` |
-| `fontWeight: 400` | `fontWeight: FONT_WEIGHT.regular` |
-| `fontWeight: 500` | `fontWeight: FONT_WEIGHT.medium` |
-| `fontWeight: 600` | `fontWeight: FONT_WEIGHT.semibold` |
-| `fontWeight: 700` | `fontWeight: FONT_WEIGHT.bold` |
-| `backdropFilter: 'blur(8px)'` | `backdropFilter: BLUR.sm` |
-| `backdropFilter: 'blur(10px)'` | `backdropFilter: BLUR.md` |
-| `backdropFilter: 'blur(40px)'` | `backdropFilter: BLUR.lg` |
-| `transition: 'all 0.2s ease'` | `transition: transition('all', DURATION.base)` |
-| `transition: 'opacity 0.3s ease'` | `transition: transition('opacity', DURATION.slow)` |
-| `transition: 'X 0.15s ease'` | `transition: transition('X', DURATION.fast)` |
-| `'a 0.2s ease, b 0.2s ease'` | `transition: transition(['a','b'], DURATION.base)` |
-| hand-rolled `'&::-webkit-scrollbar': { ... }` block | `...scrollbarSx(palette)` |
+> | `fontSize: 10` | `fontSize: TYPO.tiny` |
+> | `fontSize: 11` | `fontSize: TYPO.xs` |
+> | `fontSize: 12` | `fontSize: TYPO.sm` |
+> | `fontSize: 13` | `fontSize: TYPO.body` |
+> | `fontSize: 14` | `fontSize: TYPO.md` |
+> | `fontSize: 16` | `fontSize: TYPO.lg` |
+> | `fontSize: 18` | `fontSize: TYPO.xl` |
+> | `fontSize: 20` | `fontSize: TYPO.xxl` |
+> | `fontWeight: 400` | `fontWeight: FONT_WEIGHT.regular` |
+> | `fontWeight: 500` | `fontWeight: FONT_WEIGHT.medium` |
+> | `fontWeight: 600` | `fontWeight: FONT_WEIGHT.semibold` |
+> | `fontWeight: 700` | `fontWeight: FONT_WEIGHT.bold` |
+> | `backdropFilter: 'blur(8px)'` | `backdropFilter: BLUR.sm` |
+> | `backdropFilter: 'blur(10px)'` | `backdropFilter: BLUR.md` |
+> | `backdropFilter: 'blur(40px)'` | `backdropFilter: BLUR.lg` |
+> | `transition: 'all 0.2s ease'` | `transition: transition('all', DURATION.base)` |
+> | `transition: 'opacity 0.3s ease'` | `transition: transition('opacity', DURATION.slow)` |
+> | `transition: 'X 0.15s ease'` | `transition: transition('X', DURATION.fast)` |
+> | `'a 0.2s ease, b 0.2s ease'` | `transition: transition(['a','b'], DURATION.base)` |
+> | hand-rolled `'&::-webkit-scrollbar': { ... }` block | `...scrollbarSx(palette)` |
 
 `scrollbarSx` accepts options: `scrollbarSx(palette, { width: 8, thumb, thumbHover })`.
 Use it for terminal-style surfaces that need explicit colors.
@@ -172,13 +172,13 @@ unless they become common enough to deserve a token.
 Most ad-hoc `darkMode ? '#aaa' : '#666'` / `darkMode ? '#888' : '#999'` mappings
 fold into the existing semantic text tokens:
 
-| Before | Recommended token |
-|---|---|
-| `darkMode ? '#aaa' : '#666'` (label) | `palette.textSecondary` |
+| Before                                                  | Recommended token       |
+| ------------------------------------------------------- | ----------------------- |
+| `darkMode ? '#aaa' : '#666'` (label)                    | `palette.textSecondary` |
 | `darkMode ? '#888' : '#888'` / `'#888'` (neutral state) | `palette.statusNeutral` |
-| `darkMode ? '#666' : '#999'` (helper / counter) | `palette.textMuted` |
-| `darkMode ? '#555' : '#bbb'` (strong muted, chips) | `palette.textFaint` |
-| `darkMode ? '#333' : '#ddd'` (1px divider) | `palette.border` |
+| `darkMode ? '#666' : '#999'` (helper / counter)         | `palette.textMuted`     |
+| `darkMode ? '#555' : '#bbb'` (strong muted, chips)      | `palette.textFaint`     |
+| `darkMode ? '#333' : '#ddd'` (1px divider)              | `palette.border`        |
 
 When the visual needs are genuinely bespoke (different RGB triplets, not just a
 lighter/darker pair), leave a `// TODO(style-migration)` comment and branch on
@@ -212,7 +212,7 @@ lighter/darker pair), leave a `// TODO(style-migration)` comment and branch on
 import { useAppStore } from '@store/appStore';
 
 export function Foo() {
-  const darkMode = useAppStore((s) => s.darkMode);
+  const darkMode = useAppStore(s => s.darkMode);
   return (
     <div
       style={{

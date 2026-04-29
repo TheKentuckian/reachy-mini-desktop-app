@@ -169,9 +169,7 @@ async fn start_local_proxy(state: Arc<LocalProxyState>) -> Result<(), String> {
                 // unless a proxy task panics before bind). Surface as a
                 // generic failure; we don't know the port here, so treat it
                 // as a critical error.
-                return Err(
-                    "Proxy listener task aborted before binding".to_string(),
-                );
+                return Err("Proxy listener task aborted before binding".to_string());
             }
             Err(_) => {
                 return Err(format!(
