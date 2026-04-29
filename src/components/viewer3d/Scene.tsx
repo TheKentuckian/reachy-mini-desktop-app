@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect, useRef, memo } from 'react';
 import { OrbitControls } from '@react-three/drei';
+import { isLinux } from '../../utils/platform';
 import * as THREE from 'three';
 import URDFRobot from './URDFRobot';
 import ScanEffect from './effects/ScanEffect';
@@ -250,7 +251,7 @@ function Scene({
           enablePan={false}
           enableRotate={true}
           enableZoom={true}
-          enableDamping={true}
+          enableDamping={!isLinux()}
           dampingFactor={0.05}
           target={cameraConfig.target || [0, 0.2, 0]}
           minDistance={cameraConfig.minDistance || 0.2}

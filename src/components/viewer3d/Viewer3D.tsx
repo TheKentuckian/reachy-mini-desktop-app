@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Canvas } from '@react-three/fiber';
+import { Canvas, useThree } from '@react-three/fiber';
 import { Box } from '@mui/material';
 import * as THREE from 'three';
 import { isLinux } from '../../utils/platform';
@@ -104,6 +104,38 @@ function resolveCameraConfig(preset: RobotViewer3DProps['cameraPreset']): Camera
 }
 
 // ============================================================================
+// Demand-mode invalidator (Linux only)
+// ============================================================================
+
+// Triggers a render whenever robot pose data changes or the user interacts with
+// the canvas. Only mounted on Linux where frameloop="demand" is used to avoid
+// continuous 60fps rendering on Crostini's virtualized GPU.
+function DemandInvalidator({ dataVersion }: { dataVersion: number }): null {
+  const { invalidate, gl } = useThree();
+
+  useEffect(() => {
+    invalidate();
+  }, [dataVersion, invalidate]);
+
+  useEffect(() => {
+    const canvas = gl.domElement;
+    const trigger = (): void => invalidate();
+    canvas.addEventListener('pointermove', trigger, { passive: true });
+    canvas.addEventListener('pointerdown', trigger, { passive: true });
+    canvas.addEventListener('pointerup', trigger, { passive: true });
+    canvas.addEventListener('wheel', trigger, { passive: true });
+    return () => {
+      canvas.removeEventListener('pointermove', trigger);
+      canvas.removeEventListener('pointerdown', trigger);
+      canvas.removeEventListener('pointerup', trigger);
+      canvas.removeEventListener('wheel', trigger);
+    };
+  }, [gl.domElement, invalidate]);
+
+  return null;
+}
+
+// ============================================================================
 // Component
 // ============================================================================
 
@@ -205,13 +237,14 @@ export default function RobotViewer3D({
       <Canvas
         camera={{ position: cameraConfig.position, fov: cameraConfig.fov }}
         dpr={isLinux() ? [1, 1] : [1, 2]}
-        frameloop={hideEffects ? 'demand' : 'always'}
+        frameloop={isLinux() || hideEffects ? 'demand' : 'always'}
         gl={
           {
-            antialias: true,
+            // Antialias is expensive on Crostini's virtualized GPU — disable on Linux.
+            antialias: !isLinux(),
             alpha: canvasIsTransparent,
             preserveDrawingBuffer: true,
-            powerPreference: 'high-performance',
+            powerPreference: isLinux() ? 'default' : 'high-performance',
             toneMapping: THREE.ACESFilmicToneMapping,
             toneMappingExposure: 1.0,
             // TODO(ts): `outputEncoding` / `sRGBEncoding` are deprecated in newer
@@ -240,6 +273,7 @@ export default function RobotViewer3D({
         }}
       >
         <WebGLCleanup />
+        {isLinux() && <DemandInvalidator dataVersion={robotState.dataVersion} />}
         {!canvasIsTransparent && <color attach="background" args={[effectiveBackgroundColor]} />}
         <Scene
           headPose={coalesced.headPose}
