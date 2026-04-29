@@ -31,7 +31,10 @@ interface DaemonStatusBody {
 }
 
 function normalizeHost(host: string): string {
-  const trimmed = host.trim().replace(/^https?:\/\//, '').replace(/\/$/, '');
+  const trimmed = host
+    .trim()
+    .replace(/^https?:\/\//, '')
+    .replace(/\/$/, '');
   return trimmed.includes(':') ? trimmed : `${trimmed}:8000`;
 }
 
@@ -53,12 +56,9 @@ export async function probeWifiHost(host: string): Promise<WifiProbeResult> {
 
   let statusBody: DaemonStatusBody | null = null;
   try {
-    const response = await fetchWithTimeout(
-      `${base}/api/daemon/status`,
-      {},
-      PROBE_TIMEOUT_MS,
-      { silent: true }
-    );
+    const response = await fetchWithTimeout(`${base}/api/daemon/status`, {}, PROBE_TIMEOUT_MS, {
+      silent: true,
+    });
     if (!response.ok) {
       return { ok: false, reason: 'wrong_service' };
     }
@@ -80,8 +80,7 @@ export async function probeWifiHost(host: string): Promise<WifiProbeResult> {
   // purpose - the exact field name (`state` vs `status`) and the set of valid
   // state values drift across daemon versions, so we only bail if NONE of the
   // expected fields is present.
-  const hasReachyShape =
-    'state' in statusBody || 'status' in statusBody || 'version' in statusBody;
+  const hasReachyShape = 'state' in statusBody || 'status' in statusBody || 'version' in statusBody;
   if (!hasReachyShape) {
     return { ok: false, reason: 'wrong_service' };
   }

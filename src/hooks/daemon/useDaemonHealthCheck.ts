@@ -62,8 +62,13 @@ interface DaemonStatusPayload {
  * - All platforms: Pause during wake/sleep transitions
  */
 export function useDaemonHealthCheck(isActive: boolean): void {
-  const { isDaemonCrashed, isWakeSleepTransitioning, isCommandRunning, incrementTimeouts, resetTimeouts } =
-    useAppStore();
+  const {
+    isDaemonCrashed,
+    isWakeSleepTransitioning,
+    isCommandRunning,
+    incrementTimeouts,
+    resetTimeouts,
+  } = useAppStore();
 
   const eventBus = useDaemonEventBus();
 

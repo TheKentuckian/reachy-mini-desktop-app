@@ -92,10 +92,9 @@ async function checkWifiRobotV2(): Promise<{ available: boolean; robots: Discove
   });
 
   try {
-    const rawRobots = (await Promise.race([
-      invoke('discover_robots'),
-      timeoutPromise,
-    ])) as RawDiscoveredRobot[] | null;
+    const rawRobots = (await Promise.race([invoke('discover_robots'), timeoutPromise])) as
+      | RawDiscoveredRobot[]
+      | null;
 
     if (rawRobots && rawRobots.length > 0) {
       const robots: DiscoveredRobot[] = rawRobots.map(robot => ({
