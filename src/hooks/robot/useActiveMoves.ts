@@ -20,6 +20,11 @@ interface ActiveMove {
 
 type TimeoutId = ReturnType<typeof setTimeout>;
 
+// Fallback poll interval: guards against a live-but-silent WebSocket where the
+// daemon emits move_started but never emits move_completed (observed on daemon
+// v1.7.0). The WS remains the fast path; the poll provides a ~3 s safety net.
+const MOVE_POLL_INTERVAL_MS = 3000;
+
 // Exponential backoff mirroring useRobotStateWebSocket — no hard attempt cap so
 // the WebSocket recovers from prolonged network hiccups (e.g. Crostini proxy
 // drops) without requiring an app restart.
@@ -197,5 +202,34 @@ export function useActiveMoves(isActive: boolean): void {
         reconnectTimeoutRef.current = null;
       }
     };
+  }, [isActive, isDaemonCrashed, setActiveMoves]);
+
+  // HTTP fallback: poll /api/move/running every MOVE_POLL_INTERVAL_MS as a
+  // safety net for moves that the WebSocket never completes (daemon bug, silent
+  // WS, etc.). Replaces activeMoves with ground-truth from the daemon.
+  useEffect(() => {
+    if (!isActive || isDaemonCrashed) return;
+
+    const interval = setInterval(async () => {
+      if (!isMountedRef.current) return;
+      try {
+        const response = await fetchWithTimeout(
+          buildApiUrl('/api/move/running'),
+          {},
+          DAEMON_CONFIG.TIMEOUTS.COMMAND,
+          { silent: true }
+        );
+        if (response.ok && isMountedRef.current) {
+          const data = (await response.json()) as unknown;
+          if (Array.isArray(data)) {
+            setActiveMoves(data);
+          }
+        }
+      } catch {
+        // Ignore poll errors — WebSocket handles real-time updates.
+      }
+    }, MOVE_POLL_INTERVAL_MS);
+
+    return () => clearInterval(interval);
   }, [isActive, isDaemonCrashed, setActiveMoves]);
 }
