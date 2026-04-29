@@ -33,6 +33,10 @@ import type {
 const SIGNALING_PORT = 8443;
 const RECONNECT_DELAY = 2000;
 const INITIAL_RECONNECT_DELAY = 500;
+// If the signaling server connects but no video producer appears within this
+// window, assume WebRTC is not functional on this platform (e.g. WebKit2GTK
+// without full WebRTC support) and surface an error instead of spinning forever.
+const STREAM_ACQUIRE_TIMEOUT = 20_000;
 
 /** Connection states for the WebRTC stream. */
 export const StreamState = {
@@ -91,6 +95,7 @@ export function WebRTCStreamProvider({ children }: WebRTCStreamProviderProps): R
   const apiRef = useRef<GstWebRTCAPIInstance | null>(null);
   const sessionRef = useRef<GstWebRTCConsumerSession | null>(null);
   const reconnectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const streamAcquireTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const mountedRef = useRef<boolean>(true);
   const producersListenerRef = useRef<GstWebRTCProducersListener | null>(null);
   const connectionListenerRef = useRef<GstWebRTCConnectionListener | null>(null);
@@ -141,6 +146,11 @@ export function WebRTCStreamProvider({ children }: WebRTCStreamProviderProps): R
     if (reconnectTimeoutRef.current) {
       clearTimeout(reconnectTimeoutRef.current);
       reconnectTimeoutRef.current = null;
+    }
+
+    if (streamAcquireTimeoutRef.current) {
+      clearTimeout(streamAcquireTimeoutRef.current);
+      streamAcquireTimeoutRef.current = null;
     }
 
     if (sessionRef.current) {
@@ -293,6 +303,11 @@ export function WebRTCStreamProvider({ children }: WebRTCStreamProviderProps): R
 
             if (streams && streams.length > 0) {
               const mediaStream = streams[0];
+              // Stream arrived — cancel the no-producer timeout.
+              if (streamAcquireTimeoutRef.current) {
+                clearTimeout(streamAcquireTimeoutRef.current);
+                streamAcquireTimeoutRef.current = null;
+              }
               setStream(mediaStream);
               setState(StreamState.CONNECTED);
 
@@ -322,6 +337,22 @@ export function WebRTCStreamProvider({ children }: WebRTCStreamProviderProps): R
       };
 
       api.registerProducersListener(producersListenerRef.current);
+
+      // Guard against WebKit2GTK environments where the signaling WebSocket
+      // connects but no video producer ever arrives (partial WebRTC support,
+      // failed ICE, etc.). After STREAM_ACQUIRE_TIMEOUT we surface an error so
+      // the user sees a retry button instead of an infinite spinner.
+      streamAcquireTimeoutRef.current = setTimeout(() => {
+        streamAcquireTimeoutRef.current = null;
+        if (!mountedRef.current || sessionRef.current) return;
+        console.warn(
+          '[WebRTC] No stream producer within timeout — WebRTC may not be supported on this platform'
+        );
+        setError(
+          'Camera stream unavailable (no producer). WebRTC may not be supported on this platform.'
+        );
+        setState(StreamState.ERROR);
+      }, STREAM_ACQUIRE_TIMEOUT);
     } catch (e) {
       const message = e instanceof Error ? e.message : String(e);
       console.error('[WebRTC] Connection error:', message);
