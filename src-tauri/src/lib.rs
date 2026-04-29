@@ -228,7 +228,9 @@ async fn clear_local_proxy_target(state: State<'_, Arc<LocalProxyState>>) -> Res
 /// Used by the frontend reconciliation to restore `remoteHost` after a webview
 /// reload when the Rust process (and its proxy target) survived.
 #[tauri::command]
-async fn get_local_proxy_target(state: State<'_, Arc<LocalProxyState>>) -> Result<Option<String>, String> {
+async fn get_local_proxy_target(
+    state: State<'_, Arc<LocalProxyState>>,
+) -> Result<Option<String>, String> {
     Ok(local_proxy::get_target_host_public(&state).await)
 }
 
