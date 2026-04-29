@@ -123,15 +123,25 @@ jobs:
 
       - name: Collect artifacts
         run: |
+          BUILD_DATE=$(date -u +%Y%m%d-%H%M)
+          GIT_SHA=$(git rev-parse --short HEAD)
+          echo "BUILD_DATE=${BUILD_DATE}" >> $GITHUB_ENV
+          echo "GIT_SHA=${GIT_SHA}"       >> $GITHUB_ENV
           mkdir -p dist
-          find src-tauri/target/x86_64-unknown-linux-gnu/release/bundle/deb     -name "*.deb"      -exec cp {} dist/ \;
-          find src-tauri/target/x86_64-unknown-linux-gnu/release/bundle/appimage -name "*.AppImage" -exec cp {} dist/ \;
+          for f in $(find src-tauri/target/x86_64-unknown-linux-gnu/release/bundle/deb -name "*.deb"); do
+            base=$(basename "$f" .deb)
+            cp "$f" "dist/${base}_${BUILD_DATE}_${GIT_SHA}.deb"
+          done
+          for f in $(find src-tauri/target/x86_64-unknown-linux-gnu/release/bundle/appimage -name "*.AppImage"); do
+            base=$(basename "$f" .AppImage)
+            cp "$f" "dist/${base}_${BUILD_DATE}_${GIT_SHA}.AppImage"
+          done
           echo "📦 Built packages:"
           ls -lh dist/
 
       - name: Upload packages
         uses: actions/upload-artifact@v4
         with:
-          name: linux-packages
+          name: linux-packages-${{ env.BUILD_DATE }}-${{ env.GIT_SHA }}
           path: dist/
           retention-days: 14
