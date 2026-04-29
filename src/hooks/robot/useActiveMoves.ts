@@ -20,6 +20,21 @@ interface ActiveMove {
 
 type TimeoutId = ReturnType<typeof setTimeout>;
 
+// Exponential backoff mirroring useRobotStateWebSocket — no hard attempt cap so
+// the WebSocket recovers from prolonged network hiccups (e.g. Crostini proxy
+// drops) without requiring an app restart.
+const WS_RECONNECT_INITIAL_DELAY_MS = 1000;
+const WS_RECONNECT_MAX_DELAY_MS = 30000;
+const WS_BACKOFF_FACTOR = 2;
+const WS_JITTER_RATIO = 0.2;
+
+function computeReconnectDelay(attempt: number): number {
+  const raw = WS_RECONNECT_INITIAL_DELAY_MS * Math.pow(WS_BACKOFF_FACTOR, attempt);
+  const capped = Math.min(raw, WS_RECONNECT_MAX_DELAY_MS);
+  const jitter = capped * WS_JITTER_RATIO * (Math.random() * 2 - 1);
+  return Math.max(WS_RECONNECT_INITIAL_DELAY_MS, Math.floor(capped + jitter));
+}
+
 /**
  * 🎯 Real-time hook for active moves via WebSocket
  *
@@ -41,7 +56,6 @@ export function useActiveMoves(isActive: boolean): void {
   const reconnectTimeoutRef = useRef<TimeoutId | null>(null);
   const isMountedRef = useRef<boolean>(true);
   const reconnectAttemptsRef = useRef<number>(0);
-  const MAX_RECONNECT_ATTEMPTS = 5;
 
   useEffect(() => {
     isMountedRef.current = true;
@@ -100,11 +114,6 @@ export function useActiveMoves(isActive: boolean): void {
     };
 
     const connectWebSocket = (): void => {
-      // Check max reconnection attempts
-      if (reconnectAttemptsRef.current >= MAX_RECONNECT_ATTEMPTS) {
-        return;
-      }
-
       try {
         const wsUrl = `${getWsBaseUrl()}/api/move/ws/updates`;
         const ws = new WebSocket(wsUrl);
@@ -112,8 +121,8 @@ export function useActiveMoves(isActive: boolean): void {
         ws.onopen = () => {
           reconnectAttemptsRef.current = 0; // Reset on successful connection
 
-          // Fetch initial list of active moves via HTTP
-          // (WebSocket only sends updates, not initial state).
+          // Fetch current running moves: the WebSocket only sends deltas so we
+          // need a snapshot on (re)connect to recover any missed completions.
           fetchInitialMoves();
         };
 
@@ -157,10 +166,9 @@ export function useActiveMoves(isActive: boolean): void {
 
           wsRef.current = null;
 
-          // Attempt to reconnect if still active
           if (isActive && !isDaemonCrashed) {
+            const delay = computeReconnectDelay(reconnectAttemptsRef.current);
             reconnectAttemptsRef.current += 1;
-            const delay = Math.min(1000 * Math.pow(2, reconnectAttemptsRef.current), 10000);
 
             reconnectTimeoutRef.current = setTimeout(() => {
               if (isMountedRef.current && isActive && !isDaemonCrashed) {
