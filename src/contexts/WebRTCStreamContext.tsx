@@ -214,11 +214,13 @@ export function WebRTCStreamProvider({ children }: WebRTCStreamProviderProps): R
         reconnectionTimeout: 0,
         meta: { name: 'reachy-desktop-app' },
         webrtcConfig: {
-          // No external STUN — on a direct LAN connection STUN reflexive
-          // candidates reflect the public internet IP (useless for local
-          // routing) and the UDP queries may be blocked in Crostini.
-          // Host candidates via the proxy are sufficient for LAN WebRTC.
-          iceServers: [],
+          // STUN gives a reflexive candidate showing the public router IP.
+          // On routers with hairpin NAT the robot can reach that address,
+          // completing the ICE pair without a TURN relay.
+          iceServers: [
+            { urls: 'stun:stun.l.google.com:19302' },
+            { urls: 'stun:stun1.l.google.com:19302' },
+          ],
         },
       });
 
