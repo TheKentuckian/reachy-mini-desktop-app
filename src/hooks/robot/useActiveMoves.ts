@@ -206,19 +206,20 @@ export function useActiveMoves(isActive: boolean): void {
 
   // HTTP fallback: poll /api/move/running every MOVE_POLL_INTERVAL_MS as a
   // safety net for moves that the WebSocket never completes (daemon bug, silent
-  // WS, etc.). Replaces activeMoves with ground-truth from the daemon.
+  // WS, etc.). Uses a sequential setTimeout chain so each request must finish
+  // before the next is scheduled — prevents request stacking when the daemon is
+  // slow, which was causing 15-30 s delays before the badge cleared.
   useEffect(() => {
     if (!isActive || isDaemonCrashed) return;
 
-    const interval = setInterval(async () => {
+    let pollTimeoutRef: TimeoutId | null = null;
+
+    const poll = async (): Promise<void> => {
       if (!isMountedRef.current) return;
       try {
-        const response = await fetchWithTimeout(
-          buildApiUrl('/api/move/running'),
-          {},
-          DAEMON_CONFIG.TIMEOUTS.COMMAND,
-          { silent: true }
-        );
+        const response = await fetchWithTimeout(buildApiUrl('/api/move/running'), {}, 2500, {
+          silent: true,
+        });
         if (response.ok && isMountedRef.current) {
           const data = (await response.json()) as unknown;
           if (Array.isArray(data)) {
@@ -228,8 +229,19 @@ export function useActiveMoves(isActive: boolean): void {
       } catch {
         // Ignore poll errors — WebSocket handles real-time updates.
       }
-    }, MOVE_POLL_INTERVAL_MS);
 
-    return () => clearInterval(interval);
+      if (isMountedRef.current) {
+        pollTimeoutRef = setTimeout(() => void poll(), MOVE_POLL_INTERVAL_MS);
+      }
+    };
+
+    pollTimeoutRef = setTimeout(() => void poll(), MOVE_POLL_INTERVAL_MS);
+
+    return () => {
+      if (pollTimeoutRef) {
+        clearTimeout(pollTimeoutRef);
+        pollTimeoutRef = null;
+      }
+    };
   }, [isActive, isDaemonCrashed, setActiveMoves]);
 }
