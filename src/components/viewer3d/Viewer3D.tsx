@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Canvas, useThree } from '@react-three/fiber';
 import { Box } from '@mui/material';
 import * as THREE from 'three';
@@ -111,15 +111,38 @@ function resolveCameraConfig(preset: RobotViewer3DProps['cameraPreset']): Camera
 // where frameloop="demand" is used to avoid continuous 60fps rendering on
 // Crostini's virtualized GPU.
 //
+// Throttled to MAX_RENDER_HZ to avoid saturating the virtio-gpu driver.
 // Orbit interaction is handled by OrbitControls makeDefault, which calls
 // state.invalidate() when the camera actually moves — not on every mousemove.
-// Driving invalidation from pointer events here caused erratic render bursts
-// that produced visible flickering.
+const MAX_RENDER_HZ = 10;
+const MIN_RENDER_INTERVAL_MS = 1000 / MAX_RENDER_HZ;
+
 function DemandInvalidator({ dataVersion }: { dataVersion: number }): null {
   const { invalidate } = useThree();
+  const lastInvalidateRef = useRef<number>(0);
+  const pendingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    invalidate();
+    const now = Date.now();
+    const elapsed = now - lastInvalidateRef.current;
+
+    if (elapsed >= MIN_RENDER_INTERVAL_MS) {
+      lastInvalidateRef.current = now;
+      invalidate();
+    } else {
+      if (pendingTimerRef.current) clearTimeout(pendingTimerRef.current);
+      pendingTimerRef.current = setTimeout(() => {
+        lastInvalidateRef.current = Date.now();
+        invalidate();
+      }, MIN_RENDER_INTERVAL_MS - elapsed);
+    }
+
+    return () => {
+      if (pendingTimerRef.current) {
+        clearTimeout(pendingTimerRef.current);
+        pendingTimerRef.current = null;
+      }
+    };
   }, [dataVersion, invalidate]);
 
   return null;
@@ -246,7 +269,6 @@ export default function RobotViewer3D({
           } as unknown as THREE.WebGLRendererParameters
         }
         onCreated={({ gl }) => {
-          gl.sortObjects = false;
           if (canvasIsTransparent) {
             gl.setClearColor(0x000000, 0);
           }

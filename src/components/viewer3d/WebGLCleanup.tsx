@@ -31,13 +31,6 @@ export default function WebGLCleanup(): null {
       });
 
       gl?.dispose();
-
-      const loseContext = gl?.getContext()?.getExtension('WEBGL_lose_context') as {
-        loseContext: () => void;
-      } | null;
-      if (loseContext) {
-        loseContext.loseContext();
-      }
     };
   }, [gl, scene]);
 
