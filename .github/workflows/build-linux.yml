@@ -1,8 +1,8 @@
 name: Build Linux Packages
 
 # Manually triggered from the Actions tab on any branch.
-# Produces a .deb and .AppImage as a downloadable artifact — no release is
-# created and nothing is published anywhere.
+# Produces a .deb as a downloadable artifact — no release is created and
+# nothing is published anywhere.
 on:
   workflow_dispatch:
     inputs:
@@ -13,7 +13,7 @@ on:
 
 jobs:
   build:
-    name: Build .deb + AppImage
+    name: Build .deb
     runs-on: ubuntu-24.04
     permissions:
       contents: read
@@ -74,31 +74,15 @@ jobs:
             curl \
             file \
             libc-bin \
-            dpkg-dev \
-            libfuse2t64 \
-            squashfs-tools \
-            patchelf
+            dpkg-dev
 
-      - name: Generate throwaway signing key
-        # Tauri requires a signing key to produce .AppImage.tar.gz files.
-        # We generate a temporary one here — the resulting .sig files won't
-        # match tauri.conf.json's public key, so the auto-updater won't accept
-        # this build. That's fine: this workflow is for local installation, not
-        # for over-the-air updates.
-        run: |
-          yarn tauri signer generate -w ~/.tauri/reachy-mini.key --ci || true
-          SIGNING_KEY=$(cat ~/.tauri/reachy-mini.key 2>/dev/null || echo "")
-          echo "TAURI_SIGNING_PRIVATE_KEY=$SIGNING_KEY" >> $GITHUB_ENV
-          echo "TAURI_SIGNING_PRIVATE_KEY_PASSWORD=" >> $GITHUB_ENV
-
-      - name: Build Tauri app
+      - name: Build Tauri app (.deb only)
         working-directory: src-tauri
         env:
-          APPIMAGE_EXTRACT_AND_RUN: 1
           PKG_CONFIG_PATH: /usr/lib/pkgconfig:/usr/share/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig
         run: |
           rm -rf target/x86_64-unknown-linux-gnu/release/bundle
-          yarn tauri build --target x86_64-unknown-linux-gnu
+          yarn tauri build --target x86_64-unknown-linux-gnu --bundles deb
 
       - name: Inject post-install scripts into .deb
         # Adds the udev rules (USB access) and venv path-patching logic that
@@ -132,10 +116,6 @@ jobs:
             base=$(basename "$f" .deb)
             cp "$f" "dist/${base}_${BUILD_DATE}_${GIT_SHA}.deb"
           done < <(find src-tauri/target/x86_64-unknown-linux-gnu/release/bundle/deb -name "*.deb" -print0)
-          while IFS= read -r -d '' f; do
-            base=$(basename "$f" .AppImage)
-            cp "$f" "dist/${base}_${BUILD_DATE}_${GIT_SHA}.AppImage"
-          done < <(find src-tauri/target/x86_64-unknown-linux-gnu/release/bundle/appimage -name "*.AppImage" -print0)
           echo "📦 Built packages:"
           ls -lh dist/
 
