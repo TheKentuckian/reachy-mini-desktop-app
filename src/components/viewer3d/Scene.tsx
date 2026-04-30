@@ -248,6 +248,7 @@ function Scene({
         />
       ) : (
         <OrbitControls
+          makeDefault
           enablePan={false}
           enableRotate={true}
           enableZoom={true}

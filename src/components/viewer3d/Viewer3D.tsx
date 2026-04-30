@@ -107,30 +107,20 @@ function resolveCameraConfig(preset: RobotViewer3DProps['cameraPreset']): Camera
 // Demand-mode invalidator (Linux only)
 // ============================================================================
 
-// Triggers a render whenever robot pose data changes or the user interacts with
-// the canvas. Only mounted on Linux where frameloop="demand" is used to avoid
-// continuous 60fps rendering on Crostini's virtualized GPU.
+// Triggers a render whenever robot pose data changes. Only mounted on Linux
+// where frameloop="demand" is used to avoid continuous 60fps rendering on
+// Crostini's virtualized GPU.
+//
+// Orbit interaction is handled by OrbitControls makeDefault, which calls
+// state.invalidate() when the camera actually moves — not on every mousemove.
+// Driving invalidation from pointer events here caused erratic render bursts
+// that produced visible flickering.
 function DemandInvalidator({ dataVersion }: { dataVersion: number }): null {
-  const { invalidate, gl } = useThree();
+  const { invalidate } = useThree();
 
   useEffect(() => {
     invalidate();
   }, [dataVersion, invalidate]);
-
-  useEffect(() => {
-    const canvas = gl.domElement;
-    const trigger = (): void => invalidate();
-    canvas.addEventListener('pointermove', trigger, { passive: true });
-    canvas.addEventListener('pointerdown', trigger, { passive: true });
-    canvas.addEventListener('pointerup', trigger, { passive: true });
-    canvas.addEventListener('wheel', trigger, { passive: true });
-    return () => {
-      canvas.removeEventListener('pointermove', trigger);
-      canvas.removeEventListener('pointerdown', trigger);
-      canvas.removeEventListener('pointerup', trigger);
-      canvas.removeEventListener('wheel', trigger);
-    };
-  }, [gl.domElement, invalidate]);
 
   return null;
 }
